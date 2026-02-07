@@ -1,79 +1,76 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BK Bread + Salad Order Calculator</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
-  <div class="page">
-    <header class="header">
+  <div class="container">
+    <header class="top">
       <div>
         <h1>BK Bread + Salad Order Calculator</h1>
-        <p class="sub">pro1000 method. Bread + Salad together (buns + Eisberg/Tomaten/Zwiebeln).</p>
+        <div class="sub">pro1000 method. Bread + Salad together (buns + Eisberg/Tomaten/Zwiebeln).</div>
       </div>
 
-      <div class="top-actions">
-        <button id="btnSave" class="btn btn-primary">Save</button>
-        <button id="btnLoad" class="btn">Load</button>
-        <button id="btnReset" class="btn">Reset Inputs</button>
-        <button id="btnClearSaved" class="btn btn-danger">Clear Saved</button>
+      <div class="actions">
+        <button id="btnSave">Save</button>
+        <button id="btnLoad">Load</button>
+        <button id="btnReset">Reset Inputs</button>
+        <button id="btnClear">Clear Saved</button>
       </div>
     </header>
 
-    <section class="panel">
-      <div class="grid2">
-        <label class="field">
-          <span>Planned Umsatz (€)</span>
-          <input id="plannedUmsatz" type="number" inputmode="decimal" placeholder="Enter..." />
-        </label>
-        <label class="field">
-          <span>Yesterday Umsatz (€)</span>
-          <input id="yesterdayUmsatz" type="number" inputmode="decimal" placeholder="Enter..." />
-        </label>
+    <section class="cards">
+      <div class="card">
+        <label>Planned Umsatz (€)</label>
+        <input id="plannedUmsatz" type="number" placeholder="Enter..." inputmode="numeric" />
       </div>
-
-      <div class="hint">
-        pro1000 = (yesterdayUsed ÷ yesterdayUmsatz) × 1000<br/>
-        neededUnits = plannedUmsatz × pro1000<br/>
-        availableUnits = workingStock − TKstock + incomingUnits<br/>
-        toOrderUnits = max(0, neededUnits − availableUnits)<br/>
-        toOrderPacks = ceil(toOrderUnits ÷ normalPackSize)
+      <div class="card">
+        <label>Yesterday Umsatz (€)</label>
+        <input id="yesterdayUmsatz" type="number" placeholder="Enter..." inputmode="numeric" />
       </div>
     </section>
 
-    <section class="panel table-wrap">
-      <table class="table" id="itemsTable">
+    <section class="note">
+      <pre id="formulaText"></pre>
+    </section>
+
+    <!-- IMPORTANT: wrapper for horizontal scroll -->
+    <div class="table-wrapper">
+      <table id="orderTable">
         <thead>
           <tr>
-            <th class="w-nr">Nr</th>
-            <th class="w-item">Item</th>
-            <th class="w-pack">Normal pack</th>
-            <th class="w-pack">Reserve pack (TK)</th>
-
-            <th class="w-input">Yesterday used (units)</th>
-            <th class="w-out">pro1000</th>
-
-            <th class="w-input">Working stock (units)</th>
-            <th class="w-input">TK stock (units)</th>
-
-            <th class="w-input">Incoming 1 (packs)</th>
-            <th class="w-input">Incoming 2 (packs)</th>
-            <th class="w-out">Incoming (units)</th>
-
-            <th class="w-out">Needed (units)</th>
-            <th class="w-out">Available (units)</th>
-            <th class="w-out">To order (units)</th>
-            <th class="w-out">To order (packs)</th>
-            <th class="w-out">Surplus (units)</th>
+            <th>Nr</th>
+            <th>Item</th>
+            <th>Normal pack</th>
+            <th>Reserve pack (TK)</th>
+            <th>Yesterday used (units)</th>
+            <th>pro1000</th>
+            <th>Working stock (units)</th>
+            <th>TK stock (units)</th>
+            <th>Incoming 1 (packs)</th>
+            <th>Incoming 2 (packs)</th>
+            <th>Incoming (units)</th>
+            <th>Needed (units)</th>
+            <th>Available (units)</th>
+            <th>To order (units)</th>
+            <th>To order (packs)</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
-    </section>
+    </div>
+
+    <footer class="footer">
+      <div class="tiny">
+        Tip: if the table is wider than the screen, scroll horizontally.
+      </div>
+    </footer>
   </div>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
