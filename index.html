@@ -1,197 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BK Bread + Salad Order Calculator</title>
-
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:#0b1220;
-  color:#e5e7eb;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-}
-h1{margin:0 0 6px 0}
-.sub{opacity:.7;font-size:14px}
-
-.app{width:100%;padding:16px 20px 40px}
-
-.top{
-  display:flex;
-  gap:16px;
-  flex-wrap:wrap;
-  margin:16px 0 20px;
-}
-.top input{
-  background:#0f172a;
-  border:1px solid #1e293b;
-  color:#fff;
-  padding:10px 12px;
-  border-radius:8px;
-  min-width:200px;
-}
-
-.table{width:100%;overflow-x:auto}
-
-.row{
-  display:grid;
-  grid-template-columns:
-    70px     /* Nr */
-    250px    /* Item */
-    140px    /* Normal pack */
-    120px    /* TK pack */
-    170px    /* Yesterday used */
-    110px    /* pro1000 */
-    170px    /* Working stock */
-    140px    /* TK stock */
-    140px    /* Incoming 1 packs */
-    140px    /* Incoming 2 packs */
-    170px    /* Incoming units */
-    170px    /* Available */
-    150px;   /* To order packs */
-  gap:8px;
-  padding:8px 0;
-  border-bottom:1px solid #1e293b;
-}
-.row.header{font-weight:600;opacity:.85}
-
-.cell input{
-  width:100%;
-  background:#0f172a;
-  border:1px solid #1e293b;
-  color:#fff;
-  padding:6px 8px;
-  border-radius:6px;
-}
-
-.readonly{
-  background:#064e3b !important;
-  border-color:#065f46 !important;
-}
-
-@media(max-width:1200px){
-  .row{
-    grid-template-columns:
-      70px 220px 130px 110px 150px 100px 150px 130px 130px 130px 150px 150px 140px;
-  }
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BK Bread + Salad Order Calculator</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-<div class="app">
-  <h1>BK Bread + Salad Order Calculator</h1>
-  <div class="sub">pro1000 method · Working Stock − TK Stock + Incoming → Order</div>
+  <div class="page">
+    <header class="header">
+      <div>
+        <h1>BK Bread + Salad Order Calculator</h1>
+        <p class="sub">pro1000 method. Bread + Salad together (buns + Eisberg/Tomaten/Zwiebeln).</p>
+      </div>
 
-  <div class="top">
-    <input id="planned" type="number" placeholder="Planned Umsatz (€)">
-    <input id="yesterday" type="number" placeholder="Yesterday Umsatz (€)">
+      <div class="top-actions">
+        <button id="btnSave" class="btn btn-primary">Save</button>
+        <button id="btnLoad" class="btn">Load</button>
+        <button id="btnReset" class="btn">Reset Inputs</button>
+        <button id="btnClearSaved" class="btn btn-danger">Clear Saved</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="grid2">
+        <label class="field">
+          <span>Planned Umsatz (€)</span>
+          <input id="plannedUmsatz" type="number" inputmode="decimal" placeholder="Enter..." />
+        </label>
+        <label class="field">
+          <span>Yesterday Umsatz (€)</span>
+          <input id="yesterdayUmsatz" type="number" inputmode="decimal" placeholder="Enter..." />
+        </label>
+      </div>
+
+      <div class="hint">
+        pro1000 = (yesterdayUsed ÷ yesterdayUmsatz) × 1000<br/>
+        neededUnits = plannedUmsatz × pro1000<br/>
+        availableUnits = workingStock − TKstock + incomingUnits<br/>
+        toOrderUnits = max(0, neededUnits − availableUnits)<br/>
+        toOrderPacks = ceil(toOrderUnits ÷ normalPackSize)
+      </div>
+    </section>
+
+    <section class="panel table-wrap">
+      <table class="table" id="itemsTable">
+        <thead>
+          <tr>
+            <th class="w-nr">Nr</th>
+            <th class="w-item">Item</th>
+            <th class="w-pack">Normal pack</th>
+            <th class="w-pack">Reserve pack (TK)</th>
+
+            <th class="w-input">Yesterday used (units)</th>
+            <th class="w-out">pro1000</th>
+
+            <th class="w-input">Working stock (units)</th>
+            <th class="w-input">TK stock (units)</th>
+
+            <th class="w-input">Incoming 1 (packs)</th>
+            <th class="w-input">Incoming 2 (packs)</th>
+            <th class="w-out">Incoming (units)</th>
+
+            <th class="w-out">Needed (units)</th>
+            <th class="w-out">Available (units)</th>
+            <th class="w-out">To order (units)</th>
+            <th class="w-out">To order (packs)</th>
+            <th class="w-out">Surplus (units)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
   </div>
 
-  <div class="table">
-    <div class="row header">
-      <div>Nr</div>
-      <div>Item</div>
-      <div>Normal pack</div>
-      <div>TK pack</div>
-      <div>Yesterday used (units)</div>
-      <div>pro1000</div>
-      <div>Working stock (units)</div>
-      <div>TK stock (units)</div>
-      <div>Incoming 1 (packs)</div>
-      <div>Incoming 2 (packs)</div>
-      <div>Incoming (units)</div>
-      <div>Available (units)</div>
-      <div>To order (packs)</div>
-    </div>
-
-    <div id="rows"></div>
-  </div>
-</div>
-
-<script>
-/*
-EDIT CODES HERE (nr) IF YOU WANT:
-- normalPack = normal basket size
-- tkPack = TK basket size (only for reference; TK is entered in units)
-*/
-const items = [
-  { nr: 10,  name: '5" Bun',        normalPack: 20, tkPack: 30 },
-  { nr: 20,  name: '4" Bun',        normalPack: 60, tkPack: 48 },
-  { nr: 39,  name: '7" Bun',        normalPack: 48, tkPack: 32 },
-  { nr: 916, name: 'Eisbergsalat (kg)', normalPack: 6,  tkPack: 6  },
-  { nr: 910, name: 'Tomaten (kg)',      normalPack: 5,  tkPack: 5  },
-  { nr: 912, name: 'Zwiebeln (kg)',     normalPack: 20, tkPack: 20 },
-];
-
-const rowsEl = document.getElementById("rows");
-
-items.forEach((it, i) => {
-  rowsEl.insertAdjacentHTML("beforeend", `
-    <div class="row" data-i="${i}">
-      <div>${it.nr}</div>
-      <div>${it.name}</div>
-      <div>${it.normalPack}</div>
-      <div>${it.tkPack}</div>
-
-      <div class="cell"><input type="number" class="used" min="0" step="any"></div>
-      <div class="cell"><input class="pro readonly" readonly></div>
-
-      <div class="cell"><input type="number" class="work" min="0" step="any"></div>
-      <div class="cell"><input type="number" class="tk" min="0" step="any"></div>
-
-      <div class="cell"><input type="number" class="inc1" min="0" step="any"></div>
-      <div class="cell"><input type="number" class="inc2" min="0" step="any"></div>
-
-      <div class="cell"><input class="incUnits readonly" readonly></div>
-      <div class="cell"><input class="avail readonly" readonly></div>
-      <div class="cell"><input class="order readonly" readonly></div>
-    </div>
-  `);
-});
-
-function n(v){ return Number(v) || 0; }
-
-function calc(){
-  const planned = n(document.getElementById("planned").value);
-  const yesterday = n(document.getElementById("yesterday").value);
-
-  document.querySelectorAll(".row[data-i]").forEach((row, idx) => {
-    const it = items[idx];
-
-    const used = n(row.querySelector(".used").value);
-    const work = n(row.querySelector(".work").value);
-    const tk = n(row.querySelector(".tk").value);
-
-    const inc1 = n(row.querySelector(".inc1").value);
-    const inc2 = n(row.querySelector(".inc2").value);
-
-    // pro1000
-    const pro = yesterday > 0 ? (used / yesterday) * 1000 : 0;
-
-    // needed for planned Umsatz
-    const needed = planned * pro;
-
-    // incoming in units (packs * normalPack)
-    const incomingUnits = (inc1 + inc2) * it.normalPack;
-
-    // available
-    const available = (work - tk) + incomingUnits;
-
-    // to order packs (only normal packs)
-    const deficit = needed - available;
-    const toOrder = deficit > 0 ? Math.ceil(deficit / it.normalPack) : 0;
-
-    row.querySelector(".pro").value = pro.toFixed(2);
-    row.querySelector(".incUnits").value = incomingUnits.toFixed(2);
-    row.querySelector(".avail").value = available.toFixed(2);
-    row.querySelector(".order").value = toOrder;
-  });
-}
-
-document.addEventListener("input", calc);
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
