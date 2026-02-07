@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BK Daily Order Calculator</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#f4f6f8; padding:20px; }
+  h1 { color:#1f4e79; }
+  table { border-collapse: collapse; width:100%; background:#fff; }
+  th, td { border:1px solid #ccc; padding:6px; text-align:center; }
+  th { background:#1f4e79; color:#fff; }
+  input { width:90px; }
+  .green { background:#c6efce; }
+  .grey { background:#e7e6e6; }
+</style>
+</head>
+<body>
+
+<h1>BK Daily Order Calculator</h1>
+
+<p>
+Planned Umsatz (€):
+<input id="planned" class="green" type="number">
+&nbsp;&nbsp;
+Yesterday Umsatz (€):
+<input id="yesterday" class="green" type="number">
+</p>
+
+<table id="calc">
+<thead>
+<tr>
+<th>Item</th>
+<th>Normal pack</th>
+<th>Reserve pack</th>
+<th>Yesterday used</th>
+<th>pro1000</th>
+<th>Total stock</th>
+<th>Reserve (packs)</th>
+<th>Incoming (packs)</th>
+<th>Needed</th>
+<th>Available</th>
+<th>To order (packs)</th>
+<th>Surplus</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<script>
+const items = [
+  {name:'5" Bun', normal:20, reserve:30},
+  {name:'4" Bun', normal:60, reserve:48},
+  {name:'7" Bun', normal:48, reserve:32},
+  {name:'Eisbergsalat', normal:6, reserve:6},
+  {name:'Tomaten', normal:5, reserve:5},
+  {name:'Zwiebel', normal:20, reserve:20},
+];
+
+const tbody = document.querySelector("#calc tbody");
+
+items.forEach((it,i)=>{
+  const r = document.createElement("tr");
+  r.innerHTML = `
+    <td>${it.name}</td>
+    <td>${it.normal}</td>
+    <td>${it.reserve}</td>
+    <td><input class="green" data-yused></td>
+    <td class="grey" data-pro></td>
+    <td><input class="green" data-stock></td>
+    <td><input class="green" data-reserve></td>
+    <td><input class="green" data-incoming></td>
+    <td class="grey" data-needed></td>
+    <td class="grey" data-available></td>
+    <td class="grey" data-order></td>
+    <td class="grey" data-surplus></td>
+  `;
+  tbody.appendChild(r);
+});
+
+document.body.addEventListener("input", calculate);
+
+function calculate(){
+  const planned = +document.getElementById("planned").value;
+  const yesterday = +document.getElementById("yesterday").value;
+
+  tbody.querySelectorAll("tr").forEach((r,i)=>{
+    const it = items[i];
+    const yUsed = +r.querySelector("[data-yused]").value || 0;
+    const stock = +r.querySelector("[data-stock]").value || 0;
+    const resP  = +r.querySelector("[data-reserve]").value || 0;
+    const incP  = +r.querySelector("[data-incoming]").value || 0;
+
+    const pro = yesterday ? (yUsed / yesterday * 1000) : 0;
+    const needed = planned ? (pro * planned / 1000) : 0;
+
+    const reserveUnits = resP * it.reserve;
+    const incomingUnits = incP * it.normal;
+
+    const available = (stock - reserveUnits) + incomingUnits;
+    const diff = needed - available;
+
+    r.querySelector("[data-pro]").textContent = pro.toFixed(1);
+    r.querySelector("[data-needed]").textContent = Math.round(needed);
+    r.querySelector("[data-available]").textContent = Math.round(available);
+    r.querySelector("[data-order]").textContent =
+      diff > 0 ? Math.ceil(diff / it.normal) : 0;
+    r.querySelector("[data-surplus]").textContent =
+      diff < 0 ? Math.round(-diff) : 0;
+  });
+}
+</script>
+
+</body>
+</html>
