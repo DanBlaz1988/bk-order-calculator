@@ -12,7 +12,7 @@
     <header class="top">
       <div>
         <h1>BK Bread + Salad Order Calculator</h1>
-        <div class="sub">pro1000 method. Bread + Salad together (buns + Eisberg/Tomaten/Zwiebeln).</div>
+        <div class="sub">pro1000 method · buns + Eisberg/Tomaten/Zwiebeln</div>
       </div>
 
       <div class="actions">
@@ -38,36 +38,53 @@
       <pre id="formulaText"></pre>
     </section>
 
-    <!-- IMPORTANT: wrapper for horizontal scroll -->
-    <div class="table-wrapper">
+    <!-- PC: fits (no scroll). Mobile: scroll. -->
+    <div class="table-wrap">
       <table id="orderTable">
+        <colgroup>
+          <col class="c-nr">
+          <col class="c-item">
+          <col class="c-pack">
+          <col class="c-pack">
+          <col class="c-in">
+          <col class="c-out">
+          <col class="c-in">
+          <col class="c-in">
+          <col class="c-in">
+          <col class="c-in">
+          <col class="c-out">
+          <col class="c-out">
+          <col class="c-out">
+          <col class="c-out">
+          <col class="c-out">
+        </colgroup>
+
         <thead>
           <tr>
             <th>Nr</th>
             <th>Item</th>
             <th>Normal pack</th>
             <th>Reserve pack (TK)</th>
-            <th>Yesterday used (units)</th>
+            <th>Yesterday used</th>
             <th>pro1000</th>
-            <th>Working stock (units)</th>
-            <th>TK stock (units)</th>
-            <th>Incoming 1 (packs)</th>
-            <th>Incoming 2 (packs)</th>
+            <th>Working stock</th>
+            <th>TK stock</th>
+            <th>Incoming 1</th>
+            <th>Incoming 2</th>
             <th>Incoming (units)</th>
             <th>Needed (units)</th>
-            <th>Available (units)</th>
+            <th>Available</th>
             <th>To order (units)</th>
             <th>To order (packs)</th>
           </tr>
         </thead>
+
         <tbody id="tbody"></tbody>
       </table>
     </div>
 
     <footer class="footer">
-      <div class="tiny">
-        Tip: if the table is wider than the screen, scroll horizontally.
-      </div>
+      <div class="tiny">PC: fits screen. Mobile: horizontal scroll.</div>
     </footer>
   </div>
 
